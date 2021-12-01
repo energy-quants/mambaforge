@@ -29,6 +29,14 @@ jobs:
       - name: Podman Version
         run: echo "$(podman --version)"
 
+      # Runs a single command using the runners shell
+      - name: Buildah Version
+        run: echo "$(buildah --version)"
+        
+      # Runs a single command using the runners shell
+      - name: Skopeo Version
+        run: echo "$(skopeo --version)"
+
       # Runs a set of commands using the runners shell
       - name: Run a multi-line script
         run: |
