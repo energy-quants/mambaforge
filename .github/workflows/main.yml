@@ -32,12 +32,15 @@ jobs:
       # # Runs a single command using the runners shell
       # - name: mamba version
       #   run: echo "$(mamba --version)"
-      - name: podman version
-        run: echo "$(podman --version)"
       - name: show env
         run: env | sort
       - name: show github context
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: echo "$GITHUB_CONTEXT"
-
+      - id: foo
+        uses: ./.github/actions/parse-git-version
+        with:
+          who-to-greet: 'Mona the Octocat'
+      - run: echo random-number ${{ steps.foo.outputs.random-number }}
+        shell: bash
