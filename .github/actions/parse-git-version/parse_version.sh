@@ -4,7 +4,7 @@ set +eu
 GIT_DESCRIBE_VERSION=$(git describe --tags --long --dirty)
 set -eu
 
-if [ $? -ne 0 ]; then
+if [[ -z "${GIT_DESCRIBE_VERSION}" ]]; then
   echo "Unable to locate tag, using 0.0.0"
   MAJOR="0"
   MINOR="0"
