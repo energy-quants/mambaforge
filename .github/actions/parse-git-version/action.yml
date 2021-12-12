@@ -1,10 +1,5 @@
-name: 'Hello World'
-description: 'Greet someone'
-inputs:
-  who-to-greet:  # id of input
-    description: 'Who to greet'
-    required: true
-    default: 'World'
+name: 'Parse Git Version'
+description: 'Parses the `git describe` version.'
 outputs:
   random-number:
     description: "Random number"
@@ -12,7 +7,10 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - run: echo Hello ${{ inputs.who-to-greet }}.
+    - id: show-version
+      run: |
+        DESCRIBE_VERSION=$(git describe --tags --long --dirty)
+        echo DESCRIBE_VERSION
       shell: bash
     - id: random-number-generator
       run: echo "::set-output name=random-id::$(echo $RANDOM)"
