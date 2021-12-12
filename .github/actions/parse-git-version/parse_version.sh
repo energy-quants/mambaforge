@@ -16,5 +16,11 @@ if [[ -z "${GIT_DESCRIBE_VERSION}" ]]; then
   else
     GIT_DESCRIBE_VERSION="${MAJOR}.${MINOR}.${PATCH}.${POSTN}+${SHA}"
   fi
+else
+    readarray -d '-' -t parts<<<"${GIT_DESCRIBE_VERSION}"
+    semver="${parts[0]}"
+    POSTN=$(printf "%03d" "${parts[1]}")
+    SHA="${parts[2]}"
+    GIT_DESCRIBE_VERSION="${semver}.${POSTN}+${SHA}"
 fi
 
