@@ -10,7 +10,7 @@ runs:
     - id: show-version
       run: |
         source ${{ github.action_path }}/parse_version.sh
-        echo "${DESCRIBE_VERSION}"
+        echo "${GIT_DESCRIBE_VERSION}"
       shell: bash
     - id: random-number-generator
       run: echo "::set-output name=random-id::$(echo $RANDOM)"
