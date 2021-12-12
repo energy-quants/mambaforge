@@ -14,13 +14,13 @@ if [[ -z "${GIT_DESCRIBE_VERSION}" ]]; then
   if [[ "${POSTN}" == "000" ]]; then
     GIT_DESCRIBE_VERSION="${MAJOR}.${MINOR}.${PATCH}"
   else
-    GIT_DESCRIBE_VERSION="${MAJOR}.${MINOR}.${PATCH}.${POSTN}+${SHA}"
+    GIT_DESCRIBE_VERSION="${MAJOR}.${MINOR}.${PATCH}.post${POSTN}+${SHA}"
   fi
 else
     readarray -d '-' -t parts<<<"${GIT_DESCRIBE_VERSION}"
-    semver="${parts[0]}"
+    VERSION="${parts[0]}"
     POSTN=$(printf "%03d" "${parts[1]}")
-    SHA="${parts[2]}"
-    GIT_DESCRIBE_VERSION="${semver}.${POSTN}+${SHA}"
+    SHA=echo "${parts[2]}" | tr -d '\n'
+    GIT_DESCRIBE_VERSION="${VERSION}.post${POSTN}+${SHA}"
 fi
 
