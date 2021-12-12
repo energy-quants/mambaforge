@@ -1,8 +1,8 @@
-set -ox pipefail
+set -x pipefail
 
 GIT_DESCRIBE_VERSION=$(git describe --tags --long --dirty)
 
-set -eu
+set -euo
 
 if [ $? -ne 0 ]; then
   echo "Unable to locate tag, using 0.0.0"
