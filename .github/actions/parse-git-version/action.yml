@@ -9,7 +9,7 @@ runs:
   steps:
     - id: show-version
       run: |
-        DESCRIBE_VERSION=$(git describe --tags --long --dirty)
+        DESCRIBE_VERSION=$(git describe --tags --long --dirty --always)
         echo DESCRIBE_VERSION
       shell: bash
     - id: random-number-generator
