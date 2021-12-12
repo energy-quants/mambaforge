@@ -10,7 +10,7 @@ runs:
     - id: show-version
       run: |
         DESCRIBE_VERSION=$(git describe --tags --long --dirty --always)
-        echo DESCRIBE_VERSION
+        echo "${DESCRIBE_VERSION}"
       shell: bash
     - id: random-number-generator
       run: echo "::set-output name=random-id::$(echo $RANDOM)"
