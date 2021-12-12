@@ -9,11 +9,9 @@ runs:
   steps:
     - id: show-version
       run: |
-        source parse_version.sh
+        source ${{ github.action_path }}/parse_version.sh
         echo "${DESCRIBE_VERSION}"
       shell: bash
     - id: random-number-generator
       run: echo "::set-output name=random-id::$(echo $RANDOM)"
-      shell: bash
-    - run: ${{ github.action_path }}/goodbye.sh
       shell: bash
