@@ -1,7 +1,7 @@
 set -xo pipefail
 
 set +eu
-GIT_DESCRIBE_VERSION=$(git describe --tags --long --dirty | tr -d '\r\n')
+GIT_DESCRIBE_VERSION=$(git describe --tags --long --dirty)
 set -eu
 
 if [[ -z "${GIT_DESCRIBE_VERSION}" ]]; then
@@ -20,7 +20,7 @@ else
     readarray -d '-' -t parts<<<"${GIT_DESCRIBE_VERSION}"
     VERSION="${parts[0]}"
     POSTN=$(printf "%03d" "${parts[1]}")
-    SHA="${parts[2]%$'\r'}"
+    SHA="${parts[2]%$'\n'}"
     echo "XX${SHA}XX"
     GIT_DESCRIBE_VERSION="${VERSION}.post${POSTN}+${SHA}"
 fi
