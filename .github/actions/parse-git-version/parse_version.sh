@@ -20,7 +20,8 @@ else
     readarray -d '-' -t parts<<<"${GIT_DESCRIBE_VERSION}"
     VERSION="${parts[0]}"
     POSTN=$(printf "%03d" "${parts[1]}")
-    SHA=$(echo "${parts[2]}" | tr -d '\n')
+    SHA="${parts[2]}"
+    echo "XX${SHA}XX"
     GIT_DESCRIBE_VERSION="${VERSION}.post${POSTN}+${SHA}"
 fi
 
