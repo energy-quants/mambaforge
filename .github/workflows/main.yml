@@ -48,5 +48,6 @@ jobs:
           VERSION: ${{ steps.parse-version.outputs.version }}
           SCRIPTS_DIR: "${{ github.workspace }}/bootstrap/linux/mambaforge/"
         run: |
+          echo $(buildah --version)
           source ${{ github.workspace }}/build/images/mambaforge.sh
         shell: bash
