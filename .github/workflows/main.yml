@@ -33,8 +33,6 @@ jobs:
       # # Runs a single command using the runners shell
       # - name: mamba version
       #   run: echo "$(mamba --version)"
-      - name: setuptools
-        run: python -c "import setuptools; print(setuptools.__version__)"
       - name: show env
         run: env | sort
       - name: show github context
@@ -43,5 +41,5 @@ jobs:
         run: echo "$GITHUB_CONTEXT"
       - id: parse-version
         uses: ./.github/actions/parse-git-version
-      - run: echo "version = ${{ steps.parse-version.outputs.major }}.${{ steps.parse-version.outputs.minor }}.${{ steps.parse-version.outputs.patch }}"
+      - run: echo 'version = "${{ steps.parse-version.outputs.version }}"'
         shell: bash
