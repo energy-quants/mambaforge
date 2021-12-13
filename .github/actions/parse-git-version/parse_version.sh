@@ -22,7 +22,7 @@ else
     readarray -d '.' -t parts<<<"${VERSION}"
     MAJOR="${parts[0]}"
     MINOR="${parts[1]}"
-    PATCH="${parts[2]}"
+    PATCH="${parts[2]%%$'\n'}"  # trim trailing newline
 fi
 
 if [[ "${POSTN}" == "000" ]]; then
