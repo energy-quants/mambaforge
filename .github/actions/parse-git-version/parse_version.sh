@@ -1,7 +1,7 @@
 set -xo pipefail
 
 set +eu
-GIT_DESCRIBE_VERSION=$(git describe --tags --long --dirty | tr -d '\n')
+GIT_DESCRIBE_VERSION=$(git describe --tags --long --dirty | tr -d '\r\n')
 set -eu
 
 if [[ -z "${GIT_DESCRIBE_VERSION}" ]]; then
