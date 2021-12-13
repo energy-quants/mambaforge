@@ -41,5 +41,5 @@ jobs:
         run: echo "$GITHUB_CONTEXT"
       - id: parse-version
         uses: ./.github/actions/parse-git-version
-      - run: echo "version = ${{ steps.parse-version.outputs.major }}.${{ steps.parse-version.outputs.minor }}.${{ steps.parse-version.outputs.patch }}
+      - run: echo "version = ${{ steps.parse-version.outputs.major }}.${{ steps.parse-version.outputs.minor }}.${{ steps.parse-version.outputs.patch }}"
         shell: bash
