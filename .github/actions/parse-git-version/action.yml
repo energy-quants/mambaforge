@@ -1,10 +1,6 @@
 name: 'Parse Git Version'
 description: 'Parses the `git describe` version.'
 outputs:
-  random-number:
-    description: "Random number"
-    value: ${{ steps.random-number-generator.outputs.random-id }}
-
   major:
     description: "The major version number"
     value: ${{ steps.parse-version.outputs.major }}
@@ -21,4 +17,6 @@ runs:
       run: |
         source ${{ github.action_path }}/parse_version.sh
         echo "::set-output name=major::$(echo $MAJOR)"
+        echo "::set-output name=minor::$(echo $MINOR)"
+        echo "::set-output name=patch::$(echo $PATCH)"
       shell: bash
