@@ -24,13 +24,13 @@ buildah run "${container}" -- \
     --gid 1000
 
 
-buildah copy "${container}" "${SCRIPTS_DIR}" '/tmp/mambaforge/'
+buildah copy "${container}" "${SCRIPTS_DIR}" /tmp/mambaforge/
 buildah run "${container}" -- apt-get update
 buildah run "${container}" -- apt-get install -y curl
 buildah config --env USER=user "${container}"
 #buildah run --workingdir '/tmp/mambaforge' "${container}" -- bash install.sh
-buildah run "${container}" -- pushd /tmp/mambaforge && bash install.sh
-buildah run "${container}" -- popd && rm -rf '/tmp/mambaforge'
+buildah run "${container}" -- bash /tmp/mambaforge/install.sh
+buildah run "${container}" -- rm -rf /tmp/mambaforge
 #buildah config --user 'user:user' "${container}"
 
 buildah commit "${container}" mambaforge
