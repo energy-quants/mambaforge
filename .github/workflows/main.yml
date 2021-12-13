@@ -39,7 +39,7 @@ jobs:
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: echo "$GITHUB_CONTEXT"
-      - id: foo
+      - id: parse-version
         uses: ./.github/actions/parse-git-version
-      - run: echo random-number ${{ steps.foo.outputs.random-number }}
+      - run: echo ${{ steps.parse-version.outputs.major }}
         shell: bash
