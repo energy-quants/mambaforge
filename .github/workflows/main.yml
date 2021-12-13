@@ -33,13 +33,16 @@ jobs:
       # # Runs a single command using the runners shell
       # - name: mamba version
       #   run: echo "$(mamba --version)"
-      - name: show env
+      - name: Show Environment
         run: env | sort
-      - name: show github context
+      - name: Show GitHub Context
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: echo "$GITHUB_CONTEXT"
-      - id: parse-version
+      - name: Parse Version
+        id: parse-version
         uses: ./.github/actions/parse-git-version
-      - run: echo 'version = "${{ steps.parse-version.outputs.version }}"'
+      - name: Build Container Image
+        run: |
+          source ${{ github.workspace }}/build/images/mambaforge.sh
         shell: bash

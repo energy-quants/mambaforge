@@ -30,5 +30,3 @@ if [[ "${POSTN}" == "000" ]]; then
 else
     VERSION="${MAJOR}.${MINOR}.${PATCH}.post${POSTN}+${SHA}"
 fi
-
-echo "~~~${VERSION}~~~"
