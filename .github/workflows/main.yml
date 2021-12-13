@@ -43,6 +43,9 @@ jobs:
         id: parse-version
         uses: ./.github/actions/parse-git-version
       - name: Build Container Image
+        env:
+          VERSION: ${{ steps.parse-version.outputs.version }}
+          SCRIPTS_DIR: "${{ github.workspace }}/bootstrap/linux/mambaforge/"
         run: |
           source ${{ github.workspace }}/build/images/mambaforge.sh
         shell: bash

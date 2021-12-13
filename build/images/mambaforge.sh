@@ -2,6 +2,8 @@
 
 set -euox pipefail
 
+echo "${SCRIPTS_DIR}"
+echo "${VERSION}"
 
 container=$(buildah from docker.io/library/ubuntu:21.10)
 echo "${container}"
@@ -22,9 +24,7 @@ buildah run "${container}" -- \
     --gid 1000
 
 
-
-script_path="${{ github.workspace }}/bootstrap/linux/mambaforge/"
-buildah copy "${container}" "${script_path}" '/tmp/mambaforge/'
+buildah copy "${container}" "${SCRIPTS_DIR}" '/tmp/mambaforge/'
 buildah run "${container}" -- apt-get update
 buildah run "${container}" -- apt-get install -y curl
 buildah config --env USER=user "${container}"
