@@ -33,6 +33,8 @@ jobs:
       # # Runs a single command using the runners shell
       # - name: mamba version
       #   run: echo "$(mamba --version)"
+      - name: setuptools
+        run: python -c "import setuptools; print(setuptools.__version__)"
       - name: show env
         run: env | sort
       - name: show github context
