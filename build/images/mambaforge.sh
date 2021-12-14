@@ -13,7 +13,10 @@ buildah config --env LANG=C.UTF-8 "${container}"
 buildah config --env LC_ALL=C.UTF-8 "${container}"
 buildah config --env TZ=Australia/Brisbane "${container}"
 
-buildah run "${container}" -- groupadd "user" --gid 1000
+buildah run "${container}" -- \
+    groupadd "user" \
+    --gid 1000
+
 buildah run "${container}" -- \
     useradd "user" \
     --no-log-init \
@@ -28,6 +31,7 @@ buildah run "${container}" -- apt-get update
 buildah run "${container}" -- apt-get install -y curl
 buildah config --env USER=user "${container}"
 buildah copy "${container}" "${SCRIPTS_DIR}" /tmp/mambaforge/
+buildah run "${container}" -- ls -la /tmp/mambaforge/
 #buildah run --workingdir '/tmp/mambaforge' "${container}" -- bash install.sh
 buildah run "${container}" -- bash /tmp/mambaforge/install.sh
 buildah run "${container}" -- rm -rf /tmp/mambaforge
