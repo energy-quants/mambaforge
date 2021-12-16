@@ -48,7 +48,7 @@ buildah commit "${container}" mambaforge
 
 description="Base install of the mambaforge distribution."
 buildah config --label "org.opencontainers.image.description=${description}" "${container}"
-buildah config --label "org.opencontainers.image.source=https://github.com/${{ github.repository }}" "${container}"
+buildah config --label "org.opencontainers.image.source=https://github.com/${GITHUB_REPO}" "${container}"
 
 buildah rm "${container}"
 buildah images
