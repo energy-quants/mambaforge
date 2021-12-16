@@ -37,6 +37,9 @@ buildah run "${container}" -- bash /tmp/mambaforge/install.sh
 buildah run "${container}" -- rm -rf /tmp/mambaforge
 #buildah config --user 'user:user' "${container}"
 
-buildah commit "${container}" mambaforge
+image_name=`basename --suffix '.sh' "$0"`
+buildah commit "${container}" "${image_name}"
 buildah rm "${container}"
 buildah images
+
+# org.opencontainers.image.source = "https://github.com/energy-quants/mambaforge"
