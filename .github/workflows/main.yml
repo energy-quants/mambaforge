@@ -55,5 +55,5 @@ jobs:
         shell: bash
         run: |
           buildah images
-          buildah login --verbose --username dhirschfeld --password ${{ secrets.GITHUB_TOKEN }} ghcr.io
+          buildah login --username dhirschfeld --password ${{ secrets.GITHUB_TOKEN }} ghcr.io
 
