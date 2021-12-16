@@ -64,6 +64,6 @@ jobs:
           buildah tag localhost/mambaforge "${image_name}:${image_tag}"
           buildah images
           buildah login --username dhirschfeld --password ${{ secrets.GITHUB_TOKEN }} ghcr.io
-          buildah push "${image_name}:${image_tag}"
-          # buildah push --format v2s2 "${image_name}:${image_tag}"
+          # https://github.community/t/package-container-linking-via-label-not-working/176401/12
+          buildah push --format v2s2 "${image_name}:${image_tag}"
 
