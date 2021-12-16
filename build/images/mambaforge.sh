@@ -43,15 +43,15 @@ buildah run "${container}" -- rm -rf /tmp/mambaforge
 # ++ image_name=dcb670c3-6ff9-454d-beab-ffed99e54648
 # ++ buildah commit ubuntu-working-container dcb670c3-6ff9-454d-beab-ffed99e54648
 
-buildah commit "${container}" mambaforge
-
-
 description="Base install of the mambaforge distribution."
 buildah config --label "org.opencontainers.image.description=${description}" "${container}"
 buildah config --label "org.opencontainers.image.source=https://github.com/${GITHUB_REPO}" "${container}"
 
+buildah commit "${container}" mambaforge
+
 buildah rm "${container}"
 buildah images
+buildah inspect localhost/mambaforge | jq '.Docker.config.Labels'
 
 # https://github.com/opencontainers/image-spec/blob/main/annotations.md#pre-defined-annotation-keys
 # org.opencontainers.image.created
