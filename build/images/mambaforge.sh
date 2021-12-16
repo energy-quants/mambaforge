@@ -37,8 +37,13 @@ buildah run "${container}" -- bash /tmp/mambaforge/install.sh
 buildah run "${container}" -- rm -rf /tmp/mambaforge
 #buildah config --user 'user:user' "${container}"
 
-image_name=`basename --suffix '.sh' "$0"`
-buildah commit "${container}" "${image_name}"
+# image_name=`basename --suffix '.sh' "$0"`
+# Doesn't work - script is copied with a random-hash name
+# +++ basename --suffix .sh /home/runner/work/_temp/dcb670c3-6ff9-454d-beab-ffed99e54648.sh
+# ++ image_name=dcb670c3-6ff9-454d-beab-ffed99e54648
+# ++ buildah commit ubuntu-working-container dcb670c3-6ff9-454d-beab-ffed99e54648
+
+buildah commit "${container}" mambaforge
 buildah rm "${container}"
 buildah images
 

@@ -52,7 +52,7 @@ jobs:
       - name: Publish Image
         shell: bash
         run: |
-          set -euo pipefail
+          set -euox pipefail
           buildah login --username dhirschfeld --password ${{ secrets.GITHUB_TOKEN }} ghcr.io
           IFS='/' read owner repo <<< ${{ github.repository }}
           buildah tag localhost/mambaforge "ghcr.io/${{ github.repository }}/mambaforge:latest"
