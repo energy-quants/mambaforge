@@ -44,10 +44,16 @@ jobs:
         id: parse-version
         uses: ./.github/actions/parse-git-version
       - name: Build Container Image
+        shell: bash
         env:
           VERSION: ${{ steps.parse-version.outputs.version }}
           SCRIPTS_DIR: "${{ github.workspace }}/bootstrap/linux/mambaforge/"
         run: |
           echo $(buildah --version)
           source ${{ github.workspace }}/build/images/mambaforge.sh
+      - name: Publish Image
         shell: bash
+        run: |
+          buildah images
+          buildah login --verbose --username dhirschfeld --password ${{ secrets.GITHUB_TOKEN }} ghcr.io
+

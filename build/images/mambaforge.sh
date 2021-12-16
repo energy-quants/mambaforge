@@ -33,7 +33,6 @@ buildah config --env USER=user "${container}"
 buildah copy "${container}" "${SCRIPTS_DIR}" /tmp/mambaforge/
 buildah run "${container}" -- chown -R user:user /tmp/mambaforge/
 buildah run "${container}" -- ls -la /tmp/mambaforge/
-#buildah run --workingdir '/tmp/mambaforge' "${container}" -- bash install.sh
 buildah run "${container}" -- bash /tmp/mambaforge/install.sh
 buildah run "${container}" -- rm -rf /tmp/mambaforge
 #buildah config --user 'user:user' "${container}"
