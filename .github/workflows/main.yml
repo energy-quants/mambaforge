@@ -19,18 +19,51 @@ jobs:
   build:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
+    # container:
+    #   image: ghcr.io/energy-quants/mambaforge:latest
+    #   credentials:
+    #     username: dhirschfeld
+    #     password: ${{  secrets.GHCR_TOKEN }}
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
-
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
+        with:
+          fetch-depth: 0
+          submodules: recursive
+      # # Runs a single command using the runners shell
+      # - name: mamba version
+      #   run: echo "$(mamba --version)"
+      - name: Show Environment
+        run: env | sort
+      - name: Show GitHub Context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
+      - name: Parse Version
+        id: parse-version
+        uses: ./.github/actions/parse-git-version
+      - name: Build Container Image
+        shell: bash
+        env:
+          VERSION: ${{ steps.parse-version.outputs.version }}
+          SCRIPTS_DIR: "${{ github.workspace }}/bootstrap/linux/mambaforge/"
+          GITHUB_REPO: ${{ github.repository }}
         run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+          echo $(buildah --version)
+          source ${{ github.workspace }}/build/images/mambaforge.sh
+      - name: Publish Image
+        shell: bash
+        run: |
+          set -euox pipefail
+          IFS='/' read owner repo <<< ${{ github.repository }}
+          registry="ghcr.io"
+          image_name="${registry}/${owner}/${repo}/mambaforge"
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            image_name="${image_name}/pr-${{ github.event.number }}"
+          fi
+          image_tag="latest"
+          buildah tag localhost/mambaforge "${image_name}:${image_tag}"
+          buildah images
+          buildah login --username dhirschfeld --password ${{ secrets.GITHUB_TOKEN }} ghcr.io
+          # https://github.community/t/package-container-linking-via-label-not-working/176401/12
+          buildah push --format v2s2 "${image_name}:${image_tag}"
+

@@ -1,0 +1,34 @@
+name: 'Parse Git Version'
+description: 'Parses the `git describe` version.'
+outputs:
+  version:
+    description: "The full version string"
+    value: ${{ steps.parse-version.outputs.version }}
+  major:
+    description: "The major version number"
+    value: ${{ steps.parse-version.outputs.major }}
+  minor:
+    description: "The minor version number"
+    value: ${{ steps.parse-version.outputs.minor }}
+  patch:
+    description: "The patch version number"
+    value: ${{ steps.parse-version.outputs.patch }}
+  postn:
+    description: "The number of commits since the latest tag"
+    value: ${{ steps.parse-version.outputs.postn }}
+  sha:
+    description: "The git commit hash"
+    value: ${{ steps.parse-version.outputs.sha }}
+runs:
+  using: "composite"
+  steps:
+    - id: parse-version
+      run: |
+        source ${{ github.action_path }}/parse_version.sh
+        echo "::set-output name=version::$(echo $VERSION)"
+        echo "::set-output name=major::$(echo $MAJOR)"
+        echo "::set-output name=minor::$(echo $MINOR)"
+        echo "::set-output name=patch::$(echo $PATCH)"
+        echo "::set-output name=postn::$(echo $POSTN)"
+        echo "::set-output name=sha::$(echo $SHA)"
+      shell: bash
