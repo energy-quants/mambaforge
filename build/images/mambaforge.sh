@@ -45,7 +45,10 @@ buildah run "${container}" -- rm -rf /tmp/mambaforge
 
 buildah commit "${container}" mambaforge
 
-buildah config --label "org.opencontainers.image.source=https://github.com/energy-quants/mambaforge" "${container}"
+
+description="Installation of the `mambaforge` distribution."
+buildah config --label "org.opencontainers.image.description=${description}" "${container}"
+buildah config --label "org.opencontainers.image.source=https://github.com/${{ github.repository }}" "${container}"
 
 buildah rm "${container}"
 buildah images
