@@ -44,7 +44,18 @@ buildah run "${container}" -- rm -rf /tmp/mambaforge
 # ++ buildah commit ubuntu-working-container dcb670c3-6ff9-454d-beab-ffed99e54648
 
 buildah commit "${container}" mambaforge
+
+buildah config --label "org.opencontainers.image.source=https://github.com/energy-quants/mambaforge" "${container}"
+
 buildah rm "${container}"
 buildah images
 
+# https://github.com/opencontainers/image-spec/blob/main/annotations.md#pre-defined-annotation-keys
+# org.opencontainers.image.created
 # org.opencontainers.image.source = "https://github.com/energy-quants/mambaforge"
+# LABEL org.opencontainers.image.description DESCRIPTION
+# org.opencontainers.image.version
+# org.opencontainers.image.revision Source control revision identifier for the packaged software.
+
+# org.opencontainers.image.base.name
+# org.opencontainers.image.base.digest
