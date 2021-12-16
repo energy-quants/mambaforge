@@ -53,8 +53,12 @@ jobs:
         shell: bash
         run: |
           set -euox pipefail
-          buildah login --username dhirschfeld --password ${{ secrets.GITHUB_TOKEN }} ghcr.io
           IFS='/' read owner repo <<< ${{ github.repository }}
-          buildah tag localhost/mambaforge "ghcr.io/${{ github.repository }}/mambaforge:latest"
+          registry="ghcr.io"
+          image_name="${registry}/${owner}/${repo}/mambaforge"
+          image_tag="latest"
+          buildah tag localhost/mambaforge "${image_name}:${image_tag}"
           buildah images
+          buildah login --username dhirschfeld --password ${{ secrets.GITHUB_TOKEN }} ghcr.io
+          buildah push"${image_name}:${image_tag}"
 
