@@ -27,5 +27,5 @@ jobs:
       # - name: List files in the repository
       #   run: |
       #     ls ${{ github.workspace }}
-      - run: mamba --version
+      - run: bash -lc 'mamba --version'
       - run: echo "🍏 This job's status is ${{ job.status }}."
