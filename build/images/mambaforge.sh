@@ -35,7 +35,7 @@ buildah run "${container}" -- chown -R user:user /tmp/mambaforge/
 buildah run "${container}" -- ls -la /tmp/mambaforge/
 buildah run "${container}" -- bash /tmp/mambaforge/install.sh
 buildah run "${container}" -- rm -rf /tmp/mambaforge
-#buildah config --user 'user:user' "${container}"
+buildah config --user 'user:user' "${container}"
 
 # image_name=`basename --suffix '.sh' "$0"`
 # Doesn't work - script is copied with a random-hash name
