@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/energy-quants/mambaforge/mambaforge:latest
+      options: --user root
       credentials:
         username: dhirschfeld
         password: ${{  secrets.GHCR_TOKEN }}
