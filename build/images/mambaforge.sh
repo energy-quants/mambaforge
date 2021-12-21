@@ -35,6 +35,11 @@ buildah run "${container}" -- chown -R user:user /tmp/mambaforge/
 buildah run "${container}" -- ls -la /tmp/mambaforge/
 buildah run "${container}" -- bash /tmp/mambaforge/install.sh
 buildah run "${container}" -- rm -rf /tmp/mambaforge
+# Initialise mamba for non-interactive, non-login bash shell
+buildah config --env BASH_ENV=/etc/profile.d/conda.sh "${container}"
+# mamba requires a bash shell
+buildah config --entrypoint '["/bin/bash", "-c", "$0 $@"]' "${container}"
+
 buildah config --user 'user:user' "${container}"
 
 # image_name=`basename --suffix '.sh' "$0"`
