@@ -24,7 +24,8 @@ jobs:
       - run: |
           pwd
           ls -la
-      - name: List files in the repository
-        run: |
-          ls ${{ github.workspace }}
+      # - name: List files in the repository
+      #   run: |
+      #     ls ${{ github.workspace }}
+      - run: bash -lc 'mamba --version'
       - run: echo "🍏 This job's status is ${{ job.status }}."
