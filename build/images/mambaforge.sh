@@ -42,7 +42,7 @@ buildah config --entrypoint '["/bin/bash", "-lc", "$0 $@"]' "${container}"
 
 buildah run "${container}" -- ls -la /etc/profile.d
 buildah config --user 'root:root' "${container}"
-buildah run "${container}" -- 'echo "echo XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" > /etc/profile.d/conda.sh'
+buildah run "${container}" -- echo "echo XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" >> /etc/profile.d/conda.sh
 
 buildah config --user 'user:user' "${container}"
 
