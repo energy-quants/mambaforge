@@ -40,6 +40,8 @@ buildah config --env BASH_ENV=/etc/profile.d/conda.sh "${container}"
 # mamba requires a bash shell
 buildah config --entrypoint '["/bin/bash", "-lc", "$0 $@"]' "${container}"
 
+buildah run "${container}" -- echo "echo 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'" >>  /etc/profile.d/conda.sh
+
 buildah config --user 'user:user' "${container}"
 
 # image_name=`basename --suffix '.sh' "$0"`
