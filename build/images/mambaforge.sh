@@ -55,6 +55,7 @@ buildah config --user 'user:user' "${container}"
 description="Base install of the mambaforge distribution."
 buildah config --label "org.opencontainers.image.description=${description}" "${container}"
 buildah config --label "org.opencontainers.image.source=https://github.com/${GITHUB_REPO}" "${container}"
+buildah config --label "org.opencontainers.image.created=$(date -u +'%Y-%m-%dT%H:%M:%S.%3NZ')" "${container}"
 
 buildah commit "${container}" mambaforge
 
