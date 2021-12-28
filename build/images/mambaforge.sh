@@ -5,11 +5,10 @@ set -euox pipefail
 echo "${SCRIPTS_DIR}"
 echo "${VERSION}"
 
-base_image='docker.io/library/ubuntu:21.10'
-container=$(buildah from "${base_image}")
-base_digest=$(buildah inspect --format '{{.FromImageDigest}}' "${container}")
-base_digest=$(buildah inspect --format '{{.Manifest}}' "${container}" | jq -r '.config.digest')
 
+container=$(buildah from 'docker.io/library/ubuntu:21.10')
+base_image=$(buildah inspect --format '{{.FromImage}}' "${container}")
+base_digest=$(buildah inspect --format '{{.FromImageDigest}}' "${container}")
 
 buildah config --env DEBIAN_FRONTEND=noninteractive "${container}"
 buildah config --env LANG=C.UTF-8 "${container}"
