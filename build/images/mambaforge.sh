@@ -8,6 +8,7 @@ echo "${VERSION}"
 base_image='docker.io/library/ubuntu:21.10'
 container=$(buildah from "${base_image}")
 base_digest=$(buildah inspect --format '{{.FromImageDigest}}' "${container}")
+base_digest=$(buildah inspect --format '{{.Manifest}}' "${container}" | jq -r '.config.digest')
 
 
 buildah config --env DEBIAN_FRONTEND=noninteractive "${container}"
@@ -59,7 +60,7 @@ buildah config --label "org.opencontainers.image.description=${description}" "${
 buildah config --label "org.opencontainers.image.url=https://github.com/${GITHUB_REPO}" "${container}"
 buildah config --label "org.opencontainers.image.source=https://github.com/${GITHUB_REPO}/tree/${GITHUB_SHA}" "${container}"
 buildah config --label "org.opencontainers.image.base.name=${base_image}" "${container}"
-buildah config --label "org.opencontainers.image.base.name=${base_digest}" "${container}"
+buildah config --label "org.opencontainers.image.base.digest=${base_digest}" "${container}"
 buildah config --label "org.opencontainers.image.created=$(date -u +'%Y-%m-%dT%H:%M:%S.%3NZ')" "${container}"
 
 
