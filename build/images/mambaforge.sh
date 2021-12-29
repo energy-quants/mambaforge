@@ -57,6 +57,7 @@ buildah config --env BASH_ENV=/home/user/.bashenv "${container}"
 buildah run "${container}" -- ls -la /etc/profile.d
 
 buildah config --user 'root:root' "${container}"
+buildah run "${container}" -- sh -c 'echo "echo XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" >> /etc/profile.d/conda.sh'
 buildah run "${container}" -- sh -c 'echo "conda activate base" >> /etc/profile.d/conda.sh'
 buildah config --user 'user:user' "${container}"
 
