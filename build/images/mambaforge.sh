@@ -15,6 +15,11 @@ buildah config --env LANG=C.UTF-8 "${container}"
 buildah config --env LC_ALL=C.UTF-8 "${container}"
 buildah config --env TZ=Australia/Brisbane "${container}"
 
+# Install required tools
+buildah run "${container}" -- apt-get update
+buildah run "${container}" -- apt-get install -y curl
+
+# Create user
 buildah run "${container}" -- \
     groupadd "user" \
     --gid 1000
@@ -28,25 +33,28 @@ buildah run "${container}" -- \
     --uid 1000 \
     --gid 1000
 
-
-buildah run "${container}" -- apt-get update
-buildah run "${container}" -- apt-get install -y curl
 buildah config --env USER=user "${container}"
+
+# Copy install scripts
 buildah copy "${container}" "${SCRIPTS_DIR}" /tmp/mambaforge/
 buildah run "${container}" -- chown -R user:user /tmp/mambaforge/
 buildah run "${container}" -- ls -la /tmp/mambaforge/
+
+# Install mambaforge
 buildah run "${container}" -- bash /tmp/mambaforge/install.sh
 buildah run "${container}" -- rm -rf /tmp/mambaforge
+
+# Configure mamba
+buildah copy "${container}" "${GITHUB_WORKSPACE}/build/images/docker-entrypoint.sh" /
+buildah run "${container}" -- chown u+r+x user:user /docker-entrypoint.sh
+buildah config --entrypoint '[./docker-entrypoint.sh]' "${container}"
+buildah run "${container}" -- ls -la /etc/profile.d
 # Initialise mamba for non-interactive, non-login bash shell
 buildah config --env BASH_ENV=/etc/profile.d/conda.sh "${container}"
-# mamba requires a bash shell
-buildah config --entrypoint '["/bin/bash", "-c", "$0 $@"]' "${container}"
-
-buildah run "${container}" -- ls -la /etc/profile.d
 buildah config --user 'root:root' "${container}"
 buildah run "${container}" -- sh -c 'echo "conda activate base" >> /etc/profile.d/conda.sh'
-
 buildah config --user 'user:user' "${container}"
+
 
 # image_name=`basename --suffix '.sh' "$0"`
 # Doesn't work - script is copied with a random-hash name
