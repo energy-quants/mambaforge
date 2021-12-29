@@ -46,6 +46,7 @@ buildah run "${container}" -- rm -rf /tmp/mambaforge
 
 # Configure mamba
 buildah copy "${container}" "${GITHUB_WORKSPACE}/build/images/docker-entrypoint.sh" /
+buildah run "${container}" -- chown user:user /docker-entrypoint.sh
 buildah run "${container}" -- chmod u+r+x /docker-entrypoint.sh
 buildah config --entrypoint '["/docker-entrypoint.sh"]' "${container}"
 buildah run "${container}" -- ls -la /etc/profile.d
