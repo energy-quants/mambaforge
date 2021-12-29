@@ -40,7 +40,7 @@ buildah run "${container}" -- rm -rf /tmp/mambaforge
 # Initialise mamba for non-interactive, non-login bash shell
 buildah config --env BASH_ENV=/etc/profile.d/conda.sh "${container}"
 # mamba requires a bash shell
-buildah config --entrypoint '["/bin/bash", "-lc", "$0 $@"]' "${container}"
+buildah config --entrypoint '["/bin/bash", "-c", "$0 $@"]' "${container}"
 
 buildah run "${container}" -- ls -la /etc/profile.d
 buildah config --user 'root:root' "${container}"
