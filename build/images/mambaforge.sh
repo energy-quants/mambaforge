@@ -44,38 +44,32 @@ buildah run "${container}" -- ls -la /tmp/mambaforge/
 buildah run "${container}" -- bash /tmp/mambaforge/install.sh
 buildah run "${container}" -- rm -rf /tmp/mambaforge
 
-# Configure mamba
+# Configure entrypoint to initialise mamba
 buildah copy "${container}" "${GITHUB_WORKSPACE}/build/images/docker-entrypoint.sh" /
 buildah run "${container}" -- chown user:user /docker-entrypoint.sh
 buildah run "${container}" -- chmod u+r+x /docker-entrypoint.sh
 buildah config --entrypoint '["/docker-entrypoint.sh"]' "${container}"
 buildah config --cmd '["/bin/bash"]' "${container}"
-# # Initialise mamba for non-interactive, non-login bash shell
-# buildah copy "${container}" "${GITHUB_WORKSPACE}/build/images/.bashenv" /home/user/.bashenv
-# buildah run "${container}" -- chown user:user /home/user/.bashenv
-# buildah config --env BASH_ENV=/home/user/.bashenv "${container}"
 
+# Initialise mamba for non-interactive shell
 buildah config --env BASH_ENV=/etc/profile "${container}"
 
-buildah run "${container}" -- ls -la /etc/profile.d
-
 buildah config --user 'root:root' "${container}"
-buildah run "${container}" -- sh -c 'echo "echo XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" >> /etc/profile.d/conda.sh'
+# Activate `CONDA_ENV`
+buildah run "${container}" -- sh -c 'echo "conda activate \"${CONDA_ENV:=base}\"" >> /etc/profile.d/conda.sh'
+# For an interactive container it appears `conda.sh` needs to be run a second time
+# to correctly activate the environment
 buildah run "${container}" -- sh -c 'echo "source /etc/profile.d/conda.sh" >> /etc/bash.bashrc'
-# buildah run "${container}" -- sh -c 'echo "conda activate base" >> /etc/profile.d/conda.sh'
 buildah config --user 'user:user' "${container}"
 
-
-# image_name=`basename --suffix '.sh' "$0"`
-# Doesn't work - script is copied with a random-hash name
-# +++ basename --suffix .sh /home/runner/work/_temp/dcb670c3-6ff9-454d-beab-ffed99e54648.sh
-# ++ image_name=dcb670c3-6ff9-454d-beab-ffed99e54648
-# ++ buildah commit ubuntu-working-container dcb670c3-6ff9-454d-beab-ffed99e54648
-
+# Add labels
+# https://github.com/opencontainers/image-spec/blob/main/annotations.md#pre-defined-annotation-keys
 description="Base install of the mambaforge distribution."
 buildah config --label "org.opencontainers.image.description=${description}" "${container}"
 buildah config --label "org.opencontainers.image.url=https://github.com/${GITHUB_REPO}" "${container}"
 buildah config --label "org.opencontainers.image.source=https://github.com/${GITHUB_REPO}/tree/${GITHUB_SHA}" "${container}"
+buildah config --label "org.opencontainers.image.revision=${GITHUB_SHA}" "${container}"
+buildah config --label "org.opencontainers.image.version=${VERSION}" "${container}"
 buildah config --label "org.opencontainers.image.base.name=${base_image}" "${container}"
 buildah config --label "org.opencontainers.image.base.digest=${base_digest}" "${container}"
 buildah config --label "org.opencontainers.image.created=$(date -u +'%Y-%m-%dT%H:%M:%S.%3NZ')" "${container}"
@@ -86,13 +80,3 @@ buildah commit "${container}" mambaforge
 buildah rm "${container}"
 buildah images
 buildah inspect localhost/mambaforge | jq '.Docker.config.Labels'
-
-# https://github.com/opencontainers/image-spec/blob/main/annotations.md#pre-defined-annotation-keys
-# org.opencontainers.image.created
-# org.opencontainers.image.source = "https://github.com/energy-quants/mambaforge"
-# LABEL org.opencontainers.image.description DESCRIPTION
-# org.opencontainers.image.version
-# org.opencontainers.image.revision Source control revision identifier for the packaged software.
-
-# org.opencontainers.image.base.name
-# org.opencontainers.image.base.digest
