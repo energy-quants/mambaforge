@@ -3,9 +3,7 @@ set -e
 
 source /etc/profile.d/conda.sh
 
-if [ ${CONDA_SHLVL} -le 1 ]; then
-    conda activate "${CONDA_ENV:=base}"
-fi
+conda activate "${CONDA_ENV:=base}"
 
 echo "ZZZZZZZZZZZZZZZZZZZZZZ"
 
