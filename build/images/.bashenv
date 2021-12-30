@@ -1,9 +1,11 @@
 #!/bin/bash
-set -ex
+set -e
 
 source /etc/profile.d/conda.sh
 
-conda activate "${CONDA_ENV:=base}"
+if [ ${CONDA_SHLVL} -le 1 ]; then
+    conda activate "${CONDA_ENV:=base}"
+fi
 
 echo "ZZZZZZZZZZZZZZZZZZZZZZ"
 
