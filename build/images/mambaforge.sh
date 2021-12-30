@@ -49,6 +49,7 @@ buildah copy "${container}" "${GITHUB_WORKSPACE}/build/images/docker-entrypoint.
 buildah run "${container}" -- chown user:user /docker-entrypoint.sh
 buildah run "${container}" -- chmod u+r+x /docker-entrypoint.sh
 buildah config --entrypoint '["/docker-entrypoint.sh"]' "${container}"
+buildah config --cmd '["/bin/bash"]' "${container}"
 # Initialise mamba for non-interactive, non-login bash shell
 buildah copy "${container}" "${GITHUB_WORKSPACE}/build/images/.bashenv" /home/user/.bashenv
 buildah run "${container}" -- chown user:user /home/user/.bashenv
