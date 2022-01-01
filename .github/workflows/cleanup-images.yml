@@ -24,8 +24,3 @@ jobs:
           image: mambaforge
           number: ${{ github.event.number }}
           route: DELETE /orgs/energy-quants/packages/container/{repo}%2F{image}%2Fpr-{number}
-      - name: Show Output
-        shell: bash
-        run: |
-          set -e
-          echo "${{ steps.cleanup_images.outputs.data }}"
