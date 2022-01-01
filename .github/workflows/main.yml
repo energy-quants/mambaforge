@@ -70,7 +70,8 @@ jobs:
         id: cleanup_images
         uses: octokit/request-action@v2.x
         with:
-          route: GET /orgs/energy-quants/packages/container/mambaforge/mambaforge/pr-2
+          # route: GET /orgs/energy-quants/packages/container/mambaforge/mambaforge/pr-2
+          route: GET orgs/energy-quants/packages?package_type=container
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Show Output
