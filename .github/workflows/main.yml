@@ -39,12 +39,12 @@ jobs:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: echo "$GITHUB_CONTEXT"
       - name: Parse Version
-        id: parse-version
+        id: parse_version
         uses: ./.github/actions/parse-git-version
       - name: Build Container Image
         shell: bash
         env:
-          VERSION: ${{ steps.parse-version.outputs.version }}
+          VERSION: ${{ steps.parse_version.outputs.version }}
           SCRIPTS_DIR: "${{ github.workspace }}/bootstrap/linux/mambaforge/"
           GITHUB_REPO: ${{ github.repository }}
         run: |
@@ -66,4 +66,16 @@ jobs:
           buildah login --username dhirschfeld --password ${{ secrets.GITHUB_TOKEN }} ghcr.io
           # https://github.community/t/package-container-linking-via-label-not-working/176401/12
           buildah push --format v2s2 "${image_name}:${image_tag}"
+      - name: Cleanup Images
+        id: cleanup_images
+        uses: octokit/request-action@v2.x
+        with:
+          route: GET /orgs/energy-quants/packages/container/mambaforge%2Fmambaforge%2Fpr-2
+          owner: energy-quants
+          repo: mambaforge
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Show Output
+        shell: bash
+        run: echo ${{ fromJson(steps.cleanup_images.outputs.data) }}
 
