@@ -26,12 +26,20 @@ jobs:
     #     username: dhirschfeld
     #     password: ${{  secrets.GHCR_TOKEN }}
     steps:
-      - name: Show Output
-        shell: bash
+      - name: Cleanup Images
+        id: cleanup_images
+        uses: octokit/request-action@v2.x
         env:
           GITHUB_TOKEN: ${{ secrets.GHCR_TOKEN }}
+        with:
+          # route: GET /orgs/energy-quants/packages/container/mambaforge/mambaforge/pr-2
+          route: GET /orgs/energy-quants/packages?package_type=container
+
+      - name: Show Output
+        shell: bash
         run: |
-          curl -fsSL -H "Authorization: token ${GITHUB_TOKEN}" 'https://api.github.com/orgs/energy-quants/packages/container/mambaforge%2Fmambaforge%2Fpr-2'
+          set -e
+          echo ${{ fromJson(steps.cleanup_images.outputs.data) }}
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
@@ -73,13 +81,6 @@ jobs:
           buildah login --username dhirschfeld --password ${{ secrets.GITHUB_TOKEN }} ghcr.io
           # https://github.community/t/package-container-linking-via-label-not-working/176401/12
           buildah push --format v2s2 "${image_name}:${image_tag}"
-      # - name: Cleanup Images
-      #   id: cleanup_images
-      #   uses: octokit/request-action@v2.x
-      #   with:
-      #     # route: GET /orgs/energy-quants/packages/container/mambaforge/mambaforge/pr-2
-      #     route: GET /orgs/energy-quants/packages?package_type=container
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      # echo ${{ fromJson(steps.cleanup_images.outputs.data) }}
 
+
+# curl -fsSL -H "Authorization: token ${GITHUB_TOKEN}" 'https://api.github.com/orgs/energy-quants/packages/container/mambaforge%2Fmambaforge%2Fpr-2'
