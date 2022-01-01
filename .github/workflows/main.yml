@@ -31,7 +31,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           curl -H "Authorization: token ${GITHUB_TOKEN}" 'https://api.github.com/orgs/energy-quants/packages/container/mambaforge%2Fmambaforge%2Fpr-2'
-          # echo ${{ fromJson(steps.cleanup_images.outputs.data) }}
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
@@ -81,5 +80,5 @@ jobs:
       #     route: GET /orgs/energy-quants/packages?package_type=container
       #   env:
       #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
+      # echo ${{ fromJson(steps.cleanup_images.outputs.data) }}
 
