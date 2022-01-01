@@ -66,15 +66,17 @@ jobs:
           buildah login --username dhirschfeld --password ${{ secrets.GITHUB_TOKEN }} ghcr.io
           # https://github.community/t/package-container-linking-via-label-not-working/176401/12
           buildah push --format v2s2 "${image_name}:${image_tag}"
-      - name: Cleanup Images
-        id: cleanup_images
-        uses: octokit/request-action@v2.x
-        with:
-          # route: GET /orgs/energy-quants/packages/container/mambaforge/mambaforge/pr-2
-          route: GET /orgs/energy-quants/packages?package_type=container
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Cleanup Images
+      #   id: cleanup_images
+      #   uses: octokit/request-action@v2.x
+      #   with:
+      #     # route: GET /orgs/energy-quants/packages/container/mambaforge/mambaforge/pr-2
+      #     route: GET /orgs/energy-quants/packages?package_type=container
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Show Output
         shell: bash
-        run: echo ${{ fromJson(steps.cleanup_images.outputs.data) }}
+        run: |
+          # echo ${{ fromJson(steps.cleanup_images.outputs.data) }}
+          curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" 'https://api.github.com/orgs/energy-quants/packages/container/mambaforge%2Fmambaforge%2Fpr-2'
 
