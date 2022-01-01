@@ -13,6 +13,7 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
+
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
@@ -39,12 +40,12 @@ jobs:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: echo "$GITHUB_CONTEXT"
       - name: Parse Version
-        id: parse-version
+        id: parse_version
         uses: ./.github/actions/parse-git-version
       - name: Build Container Image
         shell: bash
         env:
-          VERSION: ${{ steps.parse-version.outputs.version }}
+          VERSION: ${{ steps.parse_version.outputs.version }}
           SCRIPTS_DIR: "${{ github.workspace }}/bootstrap/linux/mambaforge/"
           GITHUB_REPO: ${{ github.repository }}
         run: |
@@ -67,3 +68,5 @@ jobs:
           # https://github.community/t/package-container-linking-via-label-not-working/176401/12
           buildah push --format v2s2 "${image_name}:${image_tag}"
 
+
+# curl -fsSL -H "Authorization: token ${GITHUB_TOKEN}" 'https://api.github.com/orgs/energy-quants/packages/container/mambaforge%2Fmambaforge%2Fpr-2'
