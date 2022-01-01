@@ -25,6 +25,13 @@ jobs:
     #     username: dhirschfeld
     #     password: ${{  secrets.GHCR_TOKEN }}
     steps:
+      - name: Show Output
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          curl -H "Authorization: token ${GITHUB_TOKEN}" 'https://api.github.com/orgs/energy-quants/packages/container/mambaforge%2Fmambaforge%2Fpr-2'
+          # echo ${{ fromJson(steps.cleanup_images.outputs.data) }}
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
@@ -74,9 +81,5 @@ jobs:
       #     route: GET /orgs/energy-quants/packages?package_type=container
       #   env:
       #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Show Output
-        shell: bash
-        run: |
-          # echo ${{ fromJson(steps.cleanup_images.outputs.data) }}
-          curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" 'https://api.github.com/orgs/energy-quants/packages/container/mambaforge%2Fmambaforge%2Fpr-2'
+
 
