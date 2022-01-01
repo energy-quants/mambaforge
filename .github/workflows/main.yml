@@ -39,7 +39,7 @@ jobs:
         shell: bash
         run: |
           set -e
-          echo ${{ fromJson(steps.cleanup_images.outputs.data) }}
+          echo "${{ fromJson(steps.cleanup_images.outputs.data) }}"
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
