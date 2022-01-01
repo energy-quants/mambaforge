@@ -1,0 +1,32 @@
+name: Cleanup Images
+
+on:
+  # https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads#pull_request
+  pull_request:
+    types: [ closed ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  cleanup-images:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cleanup Images
+        id: cleanup_images
+        uses: octokit/request-action@v2.x
+        env:
+          GITHUB_TOKEN: ${{ secrets.GHCR_TOKEN }}
+        with:
+          repo: mambaforge
+          image: mambaforge
+          number: ${{ github.event.number }}
+          route: DELETE /orgs/energy-quants/packages/container/{repo}%2F{image}%2Fpr-{number}
+      - name: Show Output
+        shell: bash
+        run: |
+          set -e
+          echo "${{ steps.cleanup_images.outputs.data }}"
+          echo "${{ fromJson(steps.cleanup_images.outputs.data) }}"

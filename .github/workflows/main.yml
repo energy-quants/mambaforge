@@ -26,21 +26,6 @@ jobs:
     #     username: dhirschfeld
     #     password: ${{  secrets.GHCR_TOKEN }}
     steps:
-      - name: Cleanup Images
-        id: cleanup_images
-        uses: octokit/request-action@v2.x
-        env:
-          GITHUB_TOKEN: ${{ secrets.GHCR_TOKEN }}
-        with:
-          route: DELETE /orgs/energy-quants/packages/container/mambaforge%2Fmambaforge%2Fpr-2
-          # route: GET /orgs/energy-quants/packages?package_type=container
-
-      - name: Show Output
-        shell: bash
-        run: |
-          set -e
-          echo "${{ steps.cleanup_images.outputs.data }}"
-          echo "${{ fromJson(steps.cleanup_images.outputs.data) }}"
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
