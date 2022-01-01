@@ -71,8 +71,6 @@ jobs:
         uses: octokit/request-action@v2.x
         with:
           route: GET /orgs/energy-quants/packages/container/mambaforge%2Fmambaforge%2Fpr-2
-          owner: energy-quants
-          repo: mambaforge
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Show Output
