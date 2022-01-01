@@ -32,8 +32,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GHCR_TOKEN }}
         with:
-          # route: GET /orgs/energy-quants/packages/container/mambaforge/mambaforge/pr-2
-          route: GET /orgs/energy-quants/packages?package_type=container
+          route: GET /orgs/energy-quants/packages/container/mambaforge/mambaforge/pr-2
+          # route: GET /orgs/energy-quants/packages?package_type=container
 
       - name: Show Output
         shell: bash
