@@ -29,4 +29,3 @@ jobs:
         run: |
           set -e
           echo "${{ steps.cleanup_images.outputs.data }}"
-          echo "${{ fromJson(steps.cleanup_images.outputs.data) }}"
