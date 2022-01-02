@@ -1,2 +1,2 @@
-# Repository for the `mambaforge` Container Image
+# The `mambaforge` Container Image
 
