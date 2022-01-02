@@ -3,7 +3,7 @@ on:
   # Triggers the workflow on push or pull request events but only for the main branch
   push:
     branches: [ main ]
-  pull_request:
+  pull_request_target:
     branches: [ main ]
 jobs:
   Explore-GitHub-Actions:
@@ -28,5 +28,5 @@ jobs:
       # - name: List files in the repository
       #   run: |
       #     ls ${{ github.workspace }}
-      - run: bash -lc 'mamba --version'
+      - run: mamba --version
       - run: echo "🍏 This job's status is ${{ job.status }}."
