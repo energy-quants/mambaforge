@@ -12,8 +12,8 @@ jobs:
       image: ghcr.io/energy-quants/mambaforge/mambaforge:latest
       options: --user root
       credentials:
-        username: dhirschfeld
-        password: ${{  secrets.GHCR_TOKEN }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GHCR_TOKEN }}
     steps:
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
