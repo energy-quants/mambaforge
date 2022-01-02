@@ -1,9 +1,9 @@
 name: Cleanup Images
 
 on:
-  # https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads#pull_request
-  pull_request:
-    types: [ closed ]
+  # https://docs.github.com/en/actions/learn-github-actions/events-that-trigger-workflows#registry_package
+  registry_package:
+    types: [updated]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -11,16 +11,27 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  cleanup-images:
+  delete-untagged-images:
     runs-on: ubuntu-latest
     steps:
-      - name: Cleanup Images
-        id: cleanup_images
+      - name: Get Image Versions
+        id: list_images
         uses: octokit/request-action@v2.x
         env:
           GITHUB_TOKEN: ${{ secrets.GHCR_TOKEN }}
         with:
+          org: energy-quants
           repo: mambaforge
           image: mambaforge
-          number: ${{ github.event.number }}
-          route: DELETE /orgs/energy-quants/packages/container/{repo}%2F{image}%2Fpr-{number}
+          route: GET /orgs/{org}/packages/container/{repo}%2F{image}
+      - name: List Untagged Images
+        shell: bash
+        run: |
+          set -e
+          echo "${{ steps.list_images.outputs.data }}"
+          echo "${{ fromJson(steps.list_images.outputs.data) }}" | jq -r '.[] | select(.metadata.container.tags | length == 0) | .id'
+
+# https://docs.github.com/en/rest/reference/packages#get-all-package-versions-for-a-package-owned-by-an-organization
+# https://docs.github.com/en/rest/reference/packages#delete-package-version-for-an-organization
+
+# gh api -X GET 'orgs/energy-quants/packages/container/mambaforge%2Fmambaforge/versions' --jq '.[] | select(.metadata.container.tags | length == 0) | .id'

@@ -1,0 +1,27 @@
+name: Cleanup Pull Request
+
+on:
+  # https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads#pull_request
+  pull_request:
+    types: [ closed ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  delete-package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete Container Package
+        id: delete_package
+        uses: octokit/request-action@v2.x
+        env:
+          GITHUB_TOKEN: ${{ secrets.GHCR_TOKEN }}
+        with:
+          repo: mambaforge
+          image: mambaforge
+          number: ${{ github.event.number }}
+          # https://docs.github.com/en/rest/reference/packages#delete-a-package-for-an-organization
+          route: DELETE /orgs/energy-quants/packages/container/{repo}%2F{image}%2Fpr-{number}
