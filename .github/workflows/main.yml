@@ -45,7 +45,7 @@ jobs:
           IFS='/' read owner repo <<< ${{ github.repository }}
           registry="ghcr.io"
           image_name="${registry}/${owner}/${repo}/mambaforge"
-          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+          if [[ "${{ github.event_name }}" == "pull_request_target" ]]; then
             image_name="${image_name}/pr-${{ github.event.number }}"
           fi
           image_tag="latest"
