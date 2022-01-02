@@ -2,7 +2,7 @@ name: Cleanup Pull Request
 
 on:
   # https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads#pull_request
-  pull_request:
+  pull_request_target:
     types: [ closed ]
 
   # Allows you to run this workflow manually from the Actions tab
