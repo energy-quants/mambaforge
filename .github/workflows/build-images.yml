@@ -28,7 +28,7 @@ jobs:
         run: echo "$GITHUB_CONTEXT"
       - name: Parse Version
         id: parse_version
-        uses: ./.github/actions/parse-git-version
+        uses: energy-quants/.github/actions/parse-git-version@main
       - name: Build Container Image
         shell: bash
         env:
