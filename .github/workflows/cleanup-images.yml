@@ -8,7 +8,7 @@ on:
 
 jobs:
   delete-untagged-images:
-    uses: energy-quants/.github/workflows/cleanup-images.yml@main
+    uses: energy-quants/%2Egithub/workflows/cleanup-images.yml@main
     with:
       org: energy-quants
       repo: mambaforge
