@@ -1,4 +1,4 @@
-name: CI
+name: Build Container Image
 
 # Controls when the workflow will run
 on:
@@ -20,12 +20,6 @@ jobs:
         with:
           fetch-depth: 0
           submodules: recursive
-      - name: Show Environment
-        run: env | sort
-      - name: Show GitHub Context
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: echo "$GITHUB_CONTEXT"
       - name: Parse Version
         id: parse_version
         uses: energy-quants/.github/actions/parse-git-version@main
