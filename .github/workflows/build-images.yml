@@ -23,7 +23,7 @@ jobs:
       - name: Parse Version
         id: parse_version
         uses: energy-quants/.github/actions/parse-git-version@main
-      - name: Build Container Image
+      - name: Build Image
         shell: bash
         env:
           VERSION: ${{ steps.parse_version.outputs.version }}
@@ -32,6 +32,15 @@ jobs:
         run: |
           echo $(buildah --version)
           source ${{ github.workspace }}/build/images/mambaforge.sh
+      - name: Test Image
+        shell: bash
+        run: |
+          stdout=$(podman run -it --rm localhost/mambaforge mamba --version)
+          exitcode=$?
+          echo "${stdout}"
+          if [ $exitcode -ne 0 ]; then
+              exit $exitcode
+          fi
       - name: Publish Image
         shell: bash
         run: |
