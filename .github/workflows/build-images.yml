@@ -35,6 +35,7 @@ jobs:
       - name: Test Image
         shell: bash
         run: |
+          set -euox pipefail
           stdout=$(podman run -it --rm localhost/mambaforge mamba --version)
           exitcode=$?
           echo "${stdout}"
@@ -49,9 +50,10 @@ jobs:
           registry="ghcr.io"
           image_name="${registry}/${owner}/${repo}/mambaforge"
           if [[ "${{ github.event_name }}" == "pull_request_target" ]]; then
-            image_name="${image_name}/pr-${{ github.event.number }}"
+            image_tag="pr-${{ github.event.number }}"
+          else
+            image_tag="latest"
           fi
-          image_tag="latest"
           buildah tag localhost/mambaforge "${image_name}:${image_tag}"
           buildah images
           buildah login --username ${{ github.actor }} --password ${{ secrets.GHCR_TOKEN }} ghcr.io
