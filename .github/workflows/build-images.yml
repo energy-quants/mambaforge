@@ -1,4 +1,4 @@
-name: Build Container Image
+name: Build Container Images
 
 # Controls when the workflow will run
 on:
@@ -13,15 +13,14 @@ on:
 
 
 jobs:
-  build:
+  list_images:
     runs-on: ubuntu-latest
+    outputs:
+      images: ${{ steps.list_images.outputs.images }}
     steps:
       - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-          submodules: recursive
-      - name: Get Images
-        id: get_images
+      - name: List Images
+        id: list_images
         shell: bash
         run: |
           set -euox pipefail
@@ -31,8 +30,18 @@ jobs:
         shell: bash
         run: |
           set -euox pipefail
-          images="${{ fromJson(steps.get_images.outputs.images) }}"
+          images="${{ fromJson(steps.list_images.outputs.images) }}"
           echo $images | jq '.[]'
+  build:
+    needs: list_images
+    runs-on: ubuntu-latest
+    strategy:
+      image: ${{ fromJson(needs.list_images.outputs.images) }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          submodules: recursive
       - name: Parse Version
         id: parse_version
         uses: energy-quants/.github/actions/parse-git-version@main
@@ -40,16 +49,16 @@ jobs:
         shell: bash
         env:
           VERSION: ${{ steps.parse_version.outputs.version }}
-          SCRIPTS_DIR: "${{ github.workspace }}/bootstrap/linux/mambaforge/"
+          SCRIPTS_DIR: "${{ github.workspace }}/bootstrap/linux/${{ image }}/"
           GITHUB_REPO: ${{ github.repository }}
         run: |
           echo $(buildah --version)
-          source ${{ github.workspace }}/build/images/mambaforge/build.sh
+          source ${{ github.workspace }}/build/images/${{ image }}/build.sh
       - name: Test Image
         shell: bash
         run: |
           set -euox pipefail
-          stdout=$(podman run -it --rm localhost/mambaforge mamba --version)
+          stdout=$(podman run -it --rm localhost/${{ image }} mamba --version)
           exitcode=$?
           echo "${stdout}"
           # check exitcode
@@ -70,13 +79,13 @@ jobs:
           set -euox pipefail
           IFS='/' read owner repo <<< ${{ github.repository }}
           registry="ghcr.io"
-          image_name="${registry}/${owner}/${repo}/mambaforge"
+          image_name="${registry}/${owner}/${repo}/${{ image }}"
           if [[ "${{ github.event_name }}" == "pull_request_target" ]]; then
             image_tag="pr-${{ github.event.number }}"
           else
             image_tag="latest"
           fi
-          buildah tag localhost/mambaforge "${image_name}:${image_tag}"
+          buildah tag localhost/${{ image }} "${image_name}:${image_tag}"
           buildah images
           buildah login --username ${{ github.actor }} --password ${{ secrets.GHCR_TOKEN }} ghcr.io
           # https://github.community/t/package-container-linking-via-label-not-working/176401/12
