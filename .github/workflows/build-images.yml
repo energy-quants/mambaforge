@@ -20,6 +20,19 @@ jobs:
         with:
           fetch-depth: 0
           submodules: recursive
+      - name: Get Images
+        id: get_images
+        shell: bash
+        run: |
+          set -euox pipefail
+          images=$(python -c 'import os, json; print(json.dumps(os.listdir("./build/images")))')
+          echo "::set-output name=images::${images}"
+      - name: Show Images
+        shell: bash
+        run: |
+          set -euox pipefail
+          images="${{ fromJson(steps.get_images.outputs.images) }}"
+          echo $images | jq '.[]'
       - name: Parse Version
         id: parse_version
         uses: energy-quants/.github/actions/parse-git-version@main
@@ -31,7 +44,7 @@ jobs:
           GITHUB_REPO: ${{ github.repository }}
         run: |
           echo $(buildah --version)
-          source ${{ github.workspace }}/build/images/mambaforge.sh
+          source ${{ github.workspace }}/build/images/mambaforge/build.sh
       - name: Test Image
         shell: bash
         run: |
