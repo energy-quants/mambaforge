@@ -13,30 +13,25 @@ on:
 
 
 jobs:
-  list_images:
+  find_images:
     runs-on: ubuntu-latest
     outputs:
-      images: ${{ steps.list_images.outputs.images }}
+      images: ${{ steps.find_images.outputs.images }}
     steps:
       - uses: actions/checkout@v2
-      - name: List Images
-        id: list_images
+      - name: Find Images
+        id: find_images
         shell: bash
         run: |
           set -euox pipefail
           images=$(python -c 'import os, json; print(json.dumps(os.listdir("./build/images")))')
           echo "::set-output name=images::${images}"
-      - name: Show Images
-        shell: bash
-        run: |
-          set -euox pipefail
-          images="${{ fromJson(steps.list_images.outputs.images) }}"
-          echo $images | jq '.[]'
-  build:
-    needs: list_images
+  build_image:
+    needs: find_images
     runs-on: ubuntu-latest
     strategy:
-      image: ${{ fromJson(needs.list_images.outputs.images) }}
+      matrix:
+        image: ${{ fromJson(needs.find_images.outputs.images) }}
     steps:
       - uses: actions/checkout@v2
         with:
@@ -49,16 +44,16 @@ jobs:
         shell: bash
         env:
           VERSION: ${{ steps.parse_version.outputs.version }}
-          SCRIPTS_DIR: "${{ github.workspace }}/bootstrap/linux/${{ image }}/"
+          SCRIPTS_DIR: "${{ github.workspace }}/bootstrap/linux/${{ matrix.image }}/"
           GITHUB_REPO: ${{ github.repository }}
         run: |
           echo $(buildah --version)
-          source ${{ github.workspace }}/build/images/${{ image }}/build.sh
+          source ${{ github.workspace }}/build/images/${{ matrix.image }}/build.sh
       - name: Test Image
         shell: bash
         run: |
           set -euox pipefail
-          stdout=$(podman run -it --rm localhost/${{ image }} mamba --version)
+          stdout=$(podman run -it --rm localhost/${{ matrix.image }} mamba --version)
           exitcode=$?
           echo "${stdout}"
           # check exitcode
@@ -79,13 +74,13 @@ jobs:
           set -euox pipefail
           IFS='/' read owner repo <<< ${{ github.repository }}
           registry="ghcr.io"
-          image_name="${registry}/${owner}/${repo}/${{ image }}"
+          image_name="${registry}/${owner}/${repo}/${{ matrix.image }}"
           if [[ "${{ github.event_name }}" == "pull_request_target" ]]; then
             image_tag="pr-${{ github.event.number }}"
           else
             image_tag="latest"
           fi
-          buildah tag localhost/${{ image }} "${image_name}:${image_tag}"
+          buildah tag localhost/${{ matrix.image }} "${image_name}:${image_tag}"
           buildah images
           buildah login --username ${{ github.actor }} --password ${{ secrets.GHCR_TOKEN }} ghcr.io
           # https://github.community/t/package-container-linking-via-label-not-working/176401/12

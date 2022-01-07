@@ -45,7 +45,7 @@ buildah run "${container}" -- bash /tmp/mambaforge/install.sh
 buildah run "${container}" -- rm -rf /tmp/mambaforge
 
 # Configure entrypoint to initialise mamba
-buildah copy "${container}" "${GITHUB_WORKSPACE}/build/images/docker-entrypoint.sh" /
+buildah copy "${container}" "$(dirname ${BASH_SOURCE})/docker-entrypoint.sh" /
 buildah run "${container}" -- chown user:user /docker-entrypoint.sh
 buildah run "${container}" -- chmod u+r+x /docker-entrypoint.sh
 buildah config --entrypoint '["/docker-entrypoint.sh"]' "${container}"
