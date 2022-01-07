@@ -47,27 +47,18 @@ jobs:
           SCRIPTS_DIR: "${{ github.workspace }}/bootstrap/linux/${{ matrix.image }}/"
           GITHUB_REPO: ${{ github.repository }}
         run: |
-          echo $(buildah --version)
+          set -euox pipefail
           source ${{ github.workspace }}/build/images/${{ matrix.image }}/build.sh
       - name: Test Image
         shell: bash
         run: |
           set -euox pipefail
-          stdout=$(podman run -it --rm localhost/${{ matrix.image }} mamba --version)
-          exitcode=$?
-          echo "${stdout}"
-          # check exitcode
-          if [ $exitcode -ne 0 ]; then
-              exit $exitcode
+          filepath="${{ github.workspace }}/build/images/${{ matrix.image }}/test.sh"
+          if [[ ! -f "${filepath}" ]]; then
+            echo 'WARNING! test.sh file not found!'
+            exit 0
           fi
-          # check expected output
-          lines=($stdout)
-          if [[ "${lines[0]}" != "mamba" ]]; then
-              exit 1
-          fi
-          if [[ "${lines[2]}" != "conda" ]]; then
-              exit 1
-          fi
+          source "${filepath}"
       - name: Publish Image
         shell: bash
         run: |
