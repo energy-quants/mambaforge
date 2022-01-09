@@ -1,81 +1,18 @@
 name: Build Container Images
 
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
+  # https://docs.github.com/en/actions/learn-github-actions/events-that-trigger-workflows#push
   push:
     branches: [ main ]
+  # https://docs.github.com/en/actions/learn-github-actions/events-that-trigger-workflows#pull_request_target
   pull_request_target:
     branches: [ main ]
-
-  # Allows you to run this workflow manually from the Actions tab
+  # https://docs.github.com/en/actions/learn-github-actions/events-that-trigger-workflows#workflow_dispatch
   workflow_dispatch:
 
 
 jobs:
-  find_images:
-    runs-on: ubuntu-latest
-    outputs:
-      images: ${{ steps.find_images.outputs.images }}
-    steps:
-      - uses: actions/checkout@v2
-      - name: Find Images
-        id: find_images
-        shell: bash
-        run: |
-          set -euox pipefail
-          images=$(python -c 'import os, json; print(json.dumps(os.listdir("./build/images")))')
-          echo "::set-output name=images::${images}"
-  build_image:
-    needs: find_images
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        image: ${{ fromJson(needs.find_images.outputs.images) }}
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-          submodules: recursive
-      - name: Parse Version
-        id: parse_version
-        uses: energy-quants/.github/actions/parse-git-version@main
-      - name: Build Image
-        shell: bash
-        env:
-          VERSION: ${{ steps.parse_version.outputs.version }}
-          SCRIPTS_DIR: "${{ github.workspace }}/bootstrap/linux/${{ matrix.image }}/"
-          GITHUB_REPO: ${{ github.repository }}
-        run: |
-          set -euox pipefail
-          source ${{ github.workspace }}/build/images/${{ matrix.image }}/build.sh
-      - name: Test Image
-        shell: bash
-        run: |
-          set -euox pipefail
-          filepath="${{ github.workspace }}/build/images/${{ matrix.image }}/test.sh"
-          if [[ ! -f "${filepath}" ]]; then
-            echo 'WARNING! test.sh file not found!'
-            exit 0
-          fi
-          source "${filepath}"
-      - name: Publish Image
-        shell: bash
-        run: |
-          set -euox pipefail
-          IFS='/' read owner repo <<< ${{ github.repository }}
-          registry="ghcr.io"
-          image_name="${registry}/${owner}/${repo}/${{ matrix.image }}"
-          if [[ "${{ github.event_name }}" == "pull_request_target" ]]; then
-            image_tag="pr-${{ github.event.number }}"
-          else
-            image_tag="latest"
-          fi
-          buildah tag localhost/${{ matrix.image }} "${image_name}:${image_tag}"
-          buildah images
-          buildah login --username ${{ github.actor }} --password ${{ secrets.GHCR_TOKEN }} ghcr.io
-          # https://github.community/t/package-container-linking-via-label-not-working/176401/12
-          buildah push --format v2s2 "${image_name}:${image_tag}"
-
-
-# curl -fsSL -H "Authorization: token ${GITHUB_TOKEN}" 'https://api.github.com/orgs/energy-quants/packages/container/mambaforge%2Fmambaforge%2Fpr-2'
+  build-images:
+    uses: energy-quants/.github/.github/workflows/build-images.yml@main
+    secrets:
+      ghcr_token: ${{ secrets.GHCR_TOKEN }}
