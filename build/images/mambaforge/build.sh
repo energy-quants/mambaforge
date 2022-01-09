@@ -1,9 +1,5 @@
 #!/bin/bash
-
 set -euox pipefail
-
-echo "${SCRIPTS_DIR}"
-echo "${VERSION}"
 
 
 container=$(buildah from 'docker.io/library/ubuntu:21.10')
@@ -36,7 +32,7 @@ buildah run "${container}" -- \
 buildah config --env USER=user "${container}"
 
 # Copy install scripts
-buildah copy "${container}" "${SCRIPTS_DIR}" /tmp/mambaforge/
+buildah copy "${container}" "${GITHUB_WORKSPACE}/bootstrap/linux/mambaforge/" /tmp/mambaforge/
 buildah run "${container}" -- chown -R user:user /tmp/mambaforge/
 buildah run "${container}" -- ls -la /tmp/mambaforge/
 
@@ -66,8 +62,8 @@ buildah config --user 'user:user' "${container}"
 # https://github.com/opencontainers/image-spec/blob/main/annotations.md#pre-defined-annotation-keys
 description="Base install of the mambaforge distribution."
 buildah config --label "org.opencontainers.image.description=${description}" "${container}"
-buildah config --label "org.opencontainers.image.url=https://github.com/${GITHUB_REPO}" "${container}"
-buildah config --label "org.opencontainers.image.source=https://github.com/${GITHUB_REPO}/tree/${GITHUB_SHA}" "${container}"
+buildah config --label "org.opencontainers.image.url=https://github.com/${GITHUB_REPOSITORY}" "${container}"
+buildah config --label "org.opencontainers.image.source=https://github.com/${GITHUB_REPOSITORY}/tree/${GITHUB_SHA}" "${container}"
 buildah config --label "org.opencontainers.image.revision=${GITHUB_SHA}" "${container}"
 buildah config --label "org.opencontainers.image.version=${VERSION}" "${container}"
 buildah config --label "org.opencontainers.image.base.name=${base_image}" "${container}"
