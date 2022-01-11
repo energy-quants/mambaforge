@@ -4,24 +4,16 @@ on:
   # https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads#pull_request
   pull_request_target:
     types: [ closed ]
-
-  # Allows you to run this workflow manually from the Actions tab
+  # https://docs.github.com/en/actions/learn-github-actions/events-that-trigger-workflows#workflow_dispatch
   workflow_dispatch:
 
-
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  delete-package:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Delete Container Package
-        id: delete_package
-        uses: octokit/request-action@v2.x
-        env:
-          GITHUB_TOKEN: ${{ secrets.GHCR_TOKEN }}
-        with:
-          repo: mambaforge
-          image: mambaforge
-          number: ${{ github.event.number }}
-          # https://docs.github.com/en/rest/reference/packages#delete-a-package-for-an-organization
-          route: DELETE /orgs/energy-quants/packages/container/{repo}%2F{image}%2Fpr-{number}
+  delete-untagged-images:
+    uses: energy-quants/.github/.github/workflows/cleanup-pr.yml@main
+    with:
+      org: energy-quants
+      repo: mambaforge
+      image: mambaforge
+      pr:  ${{ github.event.number }}
+    secrets:
+      ghcr_token: ${{ secrets.GHCR_TOKEN }}
