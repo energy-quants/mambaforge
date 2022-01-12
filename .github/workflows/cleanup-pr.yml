@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  delete-untagged-images:
+  delete-pr-image:
     uses: energy-quants/.github/.github/workflows/cleanup-pr.yml@main
     with:
       org: energy-quants
