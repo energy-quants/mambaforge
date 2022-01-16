@@ -1,11 +1,16 @@
 name: Cleanup Pull Request
 
 on:
-  # https://docs.github.com/en/developers/webhooks-and-events/webhooks/webhook-events-and-payloads#pull_request
+  # https://docs.github.com/en/actions/learn-github-actions/events-that-trigger-workflows#pull_request_target
   pull_request_target:
     types: [ closed ]
   # https://docs.github.com/en/actions/learn-github-actions/events-that-trigger-workflows#workflow_dispatch
   workflow_dispatch:
+    inputs:
+      pr:
+        description: 'The number of the pull request to cleanup.'
+        required: true
+
 
 jobs:
   delete-pr-image:
