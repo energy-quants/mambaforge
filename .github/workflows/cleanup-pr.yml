@@ -13,6 +13,15 @@ on:
 
 
 jobs:
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Show Environment
+        run: env | sort
+      - name: Show GitHub Context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
   delete-pr-image:
     uses: energy-quants/.github/.github/workflows/cleanup-pr.yml@main
     with:
