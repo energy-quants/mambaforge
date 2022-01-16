@@ -22,13 +22,28 @@ jobs:
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: echo "$GITHUB_CONTEXT"
-  delete-pr-image:
+  get_pr_number:
+    runs-on: ubuntu-latest
+    outputs:
+      pr: ${{ steps.get_pr_number.outputs.pr }}
+    steps:
+      - name: Get Pull Request Number
+        id: get_pr_number
+        shell: bash
+        run: |
+          set -euox pipefail
+          if [[ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" ]]; then
+            echo "::set-output name=pr::${{ github.event.inputs.pr }}"
+          else
+            echo "::set-output name=pr::${{ github.event.number }}"
+          fi
+  delete_pr_image:
     uses: energy-quants/.github/.github/workflows/cleanup-pr.yml@main
+    needs: get_pr_number
     with:
       org: energy-quants
       repo: mambaforge
       image: mambaforge
-      # terniary operator hack: https://github.com/actions/runner/issues/409
-      pr:  ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.pr || github.event.number }}
+      pr:  ${{ needs.get_pr_number.outputs.pr }}
     secrets:
       ghcr_token: ${{ secrets.GHCR_TOKEN }}
