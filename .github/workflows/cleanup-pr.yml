@@ -28,6 +28,7 @@ jobs:
       org: energy-quants
       repo: mambaforge
       image: mambaforge
-      pr:  ${{ github.event.number }}
+      # terniary operator hack: https://github.com/actions/runner/issues/409
+      pr:  ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.pr || github.event.number }}
     secrets:
       ghcr_token: ${{ secrets.GHCR_TOKEN }}
