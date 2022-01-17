@@ -44,6 +44,6 @@ jobs:
       org: energy-quants
       repo: mambaforge
       image: mambaforge
-      pr:  ${{ needs.get_pr_number.outputs.pr }}
+      pr:  ${{ fromJson(needs.get_pr_number.outputs.pr) }}
     secrets:
       ghcr_token: ${{ secrets.GHCR_TOKEN }}
