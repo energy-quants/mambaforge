@@ -11,6 +11,7 @@ buildah config --env LANG=C.UTF-8 "${container}"
 buildah config --env LC_ALL=C.UTF-8 "${container}"
 buildah config --env TZ=Australia/Brisbane "${container}"
 
+echo "::group::Configuring OS..."
 # Install required tools
 buildah run "${container}" -- apt-get update
 buildah run "${container}" -- apt-get install -y curl
@@ -31,6 +32,7 @@ buildah run "${container}" -- \
 
 buildah config --env USER=user "${container}"
 
+echo "::group::Installing mambaforge..."
 # Copy install scripts
 buildah copy "${container}" "${GITHUB_WORKSPACE}/bootstrap/linux/mambaforge/" /tmp/mambaforge/
 buildah run "${container}" -- chown -R user:user /tmp/mambaforge/
@@ -40,6 +42,7 @@ buildah run "${container}" -- ls -la /tmp/mambaforge/
 buildah run "${container}" -- bash /tmp/mambaforge/install.sh
 buildah run "${container}" -- rm -rf /tmp/mambaforge
 
+echo "::group::Configuring mamba..."
 # Configure entrypoint to initialise mamba
 buildah copy "${container}" "$(dirname ${BASH_SOURCE})/docker-entrypoint.sh" /
 buildah run "${container}" -- chown user:user /docker-entrypoint.sh
@@ -58,6 +61,7 @@ buildah run "${container}" -- sh -c 'echo "conda activate \"${CONDA_ENV:=base}\"
 buildah run "${container}" -- sh -c 'echo "source /etc/profile.d/conda.sh" >> /etc/bash.bashrc'
 buildah config --user 'user:user' "${container}"
 
+echo "::group::Finalising container image..."
 # Add labels
 # https://github.com/opencontainers/image-spec/blob/main/annotations.md#pre-defined-annotation-keys
 description="Base install of the mambaforge distribution."
