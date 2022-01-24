@@ -1,7 +1,8 @@
 #!/bin/bash
 set -euox pipefail
 
-echo "######################################################################"
+
+$MAMBAFORGE_VERSION='4.11.0-0'
 
 echo "::group::Pulling base image..."
 container=$(buildah from 'docker.io/library/ubuntu:21.10')
@@ -43,7 +44,7 @@ buildah run "${container}" -- chown -R user:user /tmp/mambaforge/
 buildah run "${container}" -- ls -la /tmp/mambaforge/
 
 # Install mambaforge
-buildah run "${container}" -- bash /tmp/mambaforge/install.sh
+buildah run "${container}" -- bash /tmp/mambaforge/install.sh --version="${MAMBAFORGE_VERSION}"
 buildah run "${container}" -- rm -rf /tmp/mambaforge
 echo "::endgroup::"
 
