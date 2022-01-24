@@ -2,7 +2,7 @@
 set -euox pipefail
 
 
-$MAMBAFORGE_VERSION='4.11.0-0'
+export MAMBAFORGE_VERSION='4.11.0-0'
 
 echo "::group::Pulling base image..."
 container=$(buildah from 'docker.io/library/ubuntu:21.10')
