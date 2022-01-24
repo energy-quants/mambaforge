@@ -2,6 +2,9 @@
 set -euox pipefail
 
 
+$MAMBAFORGE_VERSION='4.11.0-0'
+
+echo "::group::Pulling base image..."
 container=$(buildah from 'docker.io/library/ubuntu:21.10')
 base_image=$(buildah inspect --format '{{.FromImage}}' "${container}")
 base_digest=$(buildah inspect --format '{{.FromImageDigest}}' "${container}")
@@ -10,7 +13,9 @@ buildah config --env DEBIAN_FRONTEND=noninteractive "${container}"
 buildah config --env LANG=C.UTF-8 "${container}"
 buildah config --env LC_ALL=C.UTF-8 "${container}"
 buildah config --env TZ=Australia/Brisbane "${container}"
+echo "::endgroup::"
 
+echo "::group::Configuring OS..."
 # Install required tools
 buildah run "${container}" -- apt-get update
 buildah run "${container}" -- apt-get install -y curl
@@ -30,16 +35,20 @@ buildah run "${container}" -- \
     --gid 1000
 
 buildah config --env USER=user "${container}"
+echo "::endgroup::"
 
+echo "::group::Installing mambaforge..."
 # Copy install scripts
 buildah copy "${container}" "${GITHUB_WORKSPACE}/bootstrap/linux/mambaforge/" /tmp/mambaforge/
 buildah run "${container}" -- chown -R user:user /tmp/mambaforge/
 buildah run "${container}" -- ls -la /tmp/mambaforge/
 
 # Install mambaforge
-buildah run "${container}" -- bash /tmp/mambaforge/install.sh
+buildah run "${container}" -- bash /tmp/mambaforge/install.sh --version="${MAMBAFORGE_VERSION}"
 buildah run "${container}" -- rm -rf /tmp/mambaforge
+echo "::endgroup::"
 
+echo "::group::Configuring mamba..."
 # Configure entrypoint to initialise mamba
 buildah copy "${container}" "$(dirname ${BASH_SOURCE})/docker-entrypoint.sh" /
 buildah run "${container}" -- chown user:user /docker-entrypoint.sh
@@ -57,7 +66,9 @@ buildah run "${container}" -- sh -c 'echo "conda activate \"${CONDA_ENV:=base}\"
 # to correctly activate the environment
 buildah run "${container}" -- sh -c 'echo "source /etc/profile.d/conda.sh" >> /etc/bash.bashrc'
 buildah config --user 'user:user' "${container}"
+echo "::endgroup::"
 
+echo "::group::Finalising container image..."
 # Add labels
 # https://github.com/opencontainers/image-spec/blob/main/annotations.md#pre-defined-annotation-keys
 description="Base install of the mambaforge distribution."
@@ -76,3 +87,4 @@ buildah commit "${container}" mambaforge
 buildah rm "${container}"
 buildah images
 buildah inspect localhost/mambaforge | jq '.Docker.config.Labels'
+echo "::endgroup::"
