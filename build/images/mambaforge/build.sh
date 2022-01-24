@@ -1,7 +1,9 @@
 #!/bin/bash
 set -euox pipefail
 
+echo "######################################################################"
 
+echo "::group::Pulling base image..."
 container=$(buildah from 'docker.io/library/ubuntu:21.10')
 base_image=$(buildah inspect --format '{{.FromImage}}' "${container}")
 base_digest=$(buildah inspect --format '{{.FromImageDigest}}' "${container}")
@@ -10,6 +12,7 @@ buildah config --env DEBIAN_FRONTEND=noninteractive "${container}"
 buildah config --env LANG=C.UTF-8 "${container}"
 buildah config --env LC_ALL=C.UTF-8 "${container}"
 buildah config --env TZ=Australia/Brisbane "${container}"
+echo "::endgroup::"
 
 echo "::group::Configuring OS..."
 # Install required tools
@@ -31,6 +34,7 @@ buildah run "${container}" -- \
     --gid 1000
 
 buildah config --env USER=user "${container}"
+echo "::endgroup::"
 
 echo "::group::Installing mambaforge..."
 # Copy install scripts
@@ -41,6 +45,7 @@ buildah run "${container}" -- ls -la /tmp/mambaforge/
 # Install mambaforge
 buildah run "${container}" -- bash /tmp/mambaforge/install.sh
 buildah run "${container}" -- rm -rf /tmp/mambaforge
+echo "::endgroup::"
 
 echo "::group::Configuring mamba..."
 # Configure entrypoint to initialise mamba
@@ -60,6 +65,7 @@ buildah run "${container}" -- sh -c 'echo "conda activate \"${CONDA_ENV:=base}\"
 # to correctly activate the environment
 buildah run "${container}" -- sh -c 'echo "source /etc/profile.d/conda.sh" >> /etc/bash.bashrc'
 buildah config --user 'user:user' "${container}"
+echo "::endgroup::"
 
 echo "::group::Finalising container image..."
 # Add labels
@@ -80,3 +86,4 @@ buildah commit "${container}" mambaforge
 buildah rm "${container}"
 buildah images
 buildah inspect localhost/mambaforge | jq '.Docker.config.Labels'
+echo "::endgroup::"
